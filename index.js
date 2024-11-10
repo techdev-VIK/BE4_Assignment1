@@ -29,6 +29,7 @@ async function createBook(newBook) {
         const savedBook = await book.save();
         return savedBook;
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }
