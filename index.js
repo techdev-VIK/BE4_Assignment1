@@ -26,8 +26,8 @@ app.get('/', (req, res) => {
 async function createBook(newBook) {
     try {
         const book = new Book(newBook);
-        await book.save();
-
+        const savedBook = await book.save();
+        return savedBook;
     } catch (error) {
         throw error;
     }
@@ -62,7 +62,7 @@ app.get('/allbooks', async(req, res) => {
     try {
         const books = await readAllBooks();
 
-        if(books.length != 0){
+        if(books){
             res.json(books)
         }else{
             res.status(404).json({error: 'No Books found.'})
@@ -78,9 +78,9 @@ app.get('/allbooks', async(req, res) => {
 
 async function readBookByTitle(bookTitle) {
     try {
-        const book = await Book.findOne({title: bookTitle});
+        const book = await Book.find({title: bookTitle});
 
-        return title;
+        return book;
 
     } catch (error) {
         throw error;
@@ -90,17 +90,47 @@ async function readBookByTitle(bookTitle) {
 
 app.get('/books/:title', async (req, res) => {
     try {
-        const books = readBookByTitle(req.params.title);
+        const books = await readBookByTitle(req.params.title);
 
-        if(books.length != 0){
+        if(books){
             res.json(books)
         }else{
-            res.json({error: 'Book bot found'})
+            res.status(404).json({error: 'Book not found'})
         }
     } catch (error) {
         res.status(500).json({error: 'Failed to fetch books.'})
     }
 
+})
+
+
+//Q5 - read books by author
+
+
+async function readByAuthor(authorName) {
+    try {
+        const author = await Book.find({author: authorName});
+
+        return author;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+app.get('/books/author/:authorName', async (req, res) => {
+    try {
+        const books = await readByAuthor(req.params.authorName);
+
+        if(books){
+            res.json(books)
+        }else{
+            res.status(404).json({error: 'Book not nound.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch book.'})
+    }
 })
 
 
