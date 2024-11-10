@@ -36,6 +36,33 @@ app.post('/books', async(req, res) => {
 })
 
 
+
+async function readAllBooks(){
+    try {
+        const allBooks = await Book.find();
+        return allBooks;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+app.get('/allbooks', async(req, res) => {
+    try {
+        const books = await readAllBooks();
+
+        if(books.length != 0){
+            res.json(books)
+        }else{
+            res.status(404).json({error: 'No Books found.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch data.'})
+    }
+})
+
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
