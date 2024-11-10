@@ -14,6 +14,15 @@ app.use(express.json());
 initializeDatabase();
 
 
+app.get('/', (req, res) => {
+    res.send('Welcome to MyBooks App.')
+})
+
+
+
+//Q1
+
+
 async function createBook(newBook) {
     try {
         const book = new Book(newBook);
@@ -36,6 +45,7 @@ app.post('/books', async(req, res) => {
 })
 
 
+//Q3
 
 async function readAllBooks(){
     try {
@@ -60,6 +70,37 @@ app.get('/allbooks', async(req, res) => {
     } catch (error) {
         res.status(500).json({error: 'Failed to fetch data.'})
     }
+})
+
+
+
+//Q4 -read books by title
+
+async function readBookByTitle(bookTitle) {
+    try {
+        const book = await Book.findOne({title: bookTitle});
+
+        return title;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+app.get('/books/:title', async (req, res) => {
+    try {
+        const books = readBookByTitle(req.params.title);
+
+        if(books.length != 0){
+            res.json(books)
+        }else{
+            res.json({error: 'Book bot found'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch books.'})
+    }
+
 })
 
 
