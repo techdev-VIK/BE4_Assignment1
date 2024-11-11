@@ -135,6 +135,156 @@ app.get('/books/author/:authorName', async (req, res) => {
 })
 
 
+// Q6 - get books by Business genre;
+
+
+async function readByGenre(genreName){
+    try {
+        const genre = await Book.find({genre: genreName});
+
+        return genre;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+app.get('/books/genre/:genreName', async(req, res) => {
+    try {
+        const genre = await readByGenre(req.params.genreName);
+
+        if(genre){
+            res.json(genre)
+        }else{
+            res.status(404).json({error: 'Book not found.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch books.'})
+    }
+})
+
+
+// books with publishYear 2012
+
+async function readByYear(year){
+    try {
+        const book = await Book.find({publishedYear: year})
+        return book;
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+app.get('/books/year/:year', async (req, res) => {
+    try {
+        const book = await readByYear(req.params.year);
+
+        if(book){
+            res.json(book);
+        }else{
+            res.status(404).json({error: 'Book not found'});
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch books.'})
+    }
+})
+
+
+
+//Q8 - Updated book rating: { "rating": 4.5 }
+
+async function updateBook(bookId, dataToupdate){
+    try {
+        const updatedBook = await Book.findByIdAndUpdate(bookId, dataToupdate)
+
+        return updatedBook;
+    } catch (error) {
+        console.log('Error in updating the book', error);
+    }
+}
+
+app.post('/books/updated/:bookId', async (req, res) => {
+    try {
+        const updatedBook = await updateBook(req.params.bookId, req.body);
+
+        if(updatedBook){
+            res.status(200).json({message: 'Book updated successfully', updatedBook});
+        }else{
+            res.status(404).json({error: 'Book does not exists.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to update book.'})
+    }
+})
+
+
+// Q9 - Updated book data: { "publishedYear": 2017, "rating": 4.2 }
+
+
+async function updatedBookByTitle(bookTitle, dataToupdate){
+    try {
+        const updatedBook = await Book.findOneAndUpdate({title: bookTitle}, dataToupdate);
+
+        return updatedBook;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+app.post('/books/titleUpdate/:title', async (req, res) => {
+    try {
+        const updatedBook = await updatedBookByTitle(req.params.title, req.body);
+
+        if(updatedBook){
+            res.status(200).json({message: 'Book updated successfully.'})
+        }else{
+            res.status(404).json({error: 'Book does not exist'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch book to update.'})
+    }
+})
+
+
+
+//Q10 - delete a book with the help of a book id
+
+
+async function deleteBook(bookId) {
+
+    try {
+         const book = await Book.findByIdAndDelete(bookId);
+        
+        return book;
+
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+
+
+app.delete('/books/delBook/:bookId', async (req, res) => {
+    try {
+        const deletedBook = await deleteBook(req.params.bookId);
+
+        if(deletedBook){
+            res.status(200).json({message: 'Book deleted successfully.'})
+        }else{
+            res.status(404).json({error: 'Book not found.'})
+        }
+    
+    } catch (error) {
+        res.status(500).json({error: 'Failed to delete book.'})
+    }   
+})
+
+
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
